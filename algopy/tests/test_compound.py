@@ -15,11 +15,11 @@ class Test_NumpyScipyLinalgFunctions(TestCase):
         S = zeros((M,N),dtype=A)
         S[:N,:N] = diag(s)
 
-        assert_array_almost_equal( (dot(dot(U, S), V.T) - A).data, 0.)
-        assert_array_almost_equal( (dot(U.T, U) - numpy.eye(M)).data, 0.)
-        assert_array_almost_equal( (dot(U, U.T) - numpy.eye(M)).data, 0.)
-        assert_array_almost_equal( (dot(V.T, V) - numpy.eye(N)).data, 0.)
-        assert_array_almost_equal( (dot(V, V.T) - numpy.eye(N)).data, 0.)
+        assert_allclose( (dot(dot(U, S), V.T) - A).data, 0.)
+        assert_allclose( (dot(U.T, U) - numpy.eye(M)).data, 0.)
+        assert_allclose( (dot(U, U.T) - numpy.eye(M)).data, 0.)
+        assert_allclose( (dot(V.T, V) - numpy.eye(N)).data, 0.)
+        assert_allclose( (dot(V, V.T) - numpy.eye(N)).data, 0.)
 
 
     def test_expm(self):
@@ -47,7 +47,7 @@ class Test_NumpyScipyLinalgFunctions(TestCase):
 
         g2 = cg.gradient(x)
 
-        assert_array_almost_equal(g1, g2)
+        assert_allclose(g1, g2)
 
 if __name__ == "__main__":
     run_module_suite()

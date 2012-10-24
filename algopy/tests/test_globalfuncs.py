@@ -24,40 +24,40 @@ class Test_deferring(TestCase):
 
     def test_unary_function_numpy(self):
         x = numpy.ones((6,6))
-        assert_array_almost_equal(trace(x), numpy.trace(x))
+        assert_allclose(trace(x), numpy.trace(x))
 
 
     def test_unary_function_utpm(self):
         D,P,N = 3,4,5
         x = UTPM(numpy.ones((D,P,N,N)))
-        assert_array_almost_equal(trace(x).data, N * numpy.ones((D,P)))
+        assert_allclose(trace(x).data, N * numpy.ones((D,P)))
 
 
     def test_binary_function_numpy(self):
         x = numpy.random.rand(*(3,4))
         y = numpy.random.rand(*(4,3))
-        assert_array_almost_equal(dot(x,y),numpy.dot(x,y))
+        assert_allclose(dot(x,y),numpy.dot(x,y))
 
 
     def test_binary_function_utpm(self):
         D,P,N,M = 3,4,5,6
         x = UTPM(numpy.random.rand(*(D,P,N,M)))
         y = UTPM(numpy.random.rand(*(D,P,M,N)))
-        assert_array_almost_equal(dot(x,y).data,UTPM.dot(x,y).data)
+        assert_allclose(dot(x,y).data,UTPM.dot(x,y).data)
 
 
     def test_zeros_numpy(self):
         N,M = 3,4
         x = numpy.zeros((1,1),dtype=float)
         y = zeros((N,M), dtype=x)
-        assert_array_almost_equal(numpy.zeros((N,M)), y)
+        assert_allclose(numpy.zeros((N,M)), y)
 
 
     def test_zeros_utpm(self):
         D,P,N,M = 3,4,5,6
         x = UTPM(numpy.random.rand(*(D,P)))
         y = zeros((N,M), dtype=x)
-        assert_array_almost_equal(numpy.zeros((D,P,N,M)),y.data)
+        assert_allclose(numpy.zeros((D,P,N,M)),y.data)
 
 
     def test_zeros_utpm_with_mpmath_instances_as_dtype(self):
@@ -77,20 +77,20 @@ class Test_deferring(TestCase):
     def test_global_zeros_like_numpy(self):
         x = numpy.random.rand(*(3,4))
         y = zeros_like(x)
-        assert_array_almost_equal(numpy.zeros((3,4)),y)
+        assert_allclose(numpy.zeros((3,4)),y)
 
 
     def test_zeros_like_utpm(self):
         D,P,N,M = 3,4,5,6
         x = UTPM(numpy.random.rand(*(D,P,N,M)))
         y = zeros_like(x)
-        assert_array_almost_equal(numpy.zeros((D,P,N,M)),y.data)
+        assert_allclose(numpy.zeros((D,P,N,M)),y.data)
 
 
     def test_ones_like_numpy(self):
         x = numpy.random.rand(*(3,4))
         y = ones_like(x)
-        assert_array_almost_equal(numpy.ones((3,4)),y)
+        assert_allclose(numpy.ones((3,4)),y)
 
 
     def test_ones_like_utpm(self):
@@ -99,42 +99,42 @@ class Test_deferring(TestCase):
         y = ones_like(x)
         data = numpy.zeros((D,P,N,M))
         data[0,...] = 1.
-        assert_array_almost_equal(data,y.data)
+        assert_allclose(data,y.data)
 
 
     def test_dot_numpy(self):
         x = numpy.random.rand(5,5)
         y = numpy.random.rand(5,5)
-        assert_array_almost_equal(dot(x, y),numpy.dot(x, y))
+        assert_allclose(dot(x, y),numpy.dot(x, y))
 
 
     def test_dot_utpm(self):
         D,P,N = 3,4,5
         x = UTPM(numpy.random.rand(D,P,N,N))
         y = UTPM(numpy.random.rand(D,P,N,N))
-        assert_array_almost_equal(dot(x,y).data,UTPM.dot(x,y).data)
+        assert_allclose(dot(x,y).data,UTPM.dot(x,y).data)
 
 
     def test_inv_numpy(self):
         x = numpy.random.rand(5,5)
-        assert_array_almost_equal(inv(x),numpy.linalg.inv(x))
+        assert_allclose(inv(x),numpy.linalg.inv(x))
 
 
     def test_inv_utpm(self):
         D,P,N = 3,4,5
         x = UTPM(numpy.random.rand(D,P,N,N))
-        assert_array_almost_equal(inv(x).data, UTPM.inv(x).data)
+        assert_allclose(inv(x).data, UTPM.inv(x).data)
 
 
     def test_trace_numpy(self):
         x = numpy.random.rand(5,5)
-        assert_array_almost_equal(trace(x), numpy.trace(x))
+        assert_allclose(trace(x), numpy.trace(x))
 
 
     def test_trace_utpm(self):
         D,P,N = 3,4,5
         x = UTPM(numpy.random.rand(D,P,N,N))
-        assert_array_almost_equal(trace(x).data, UTPM.trace(x).data)
+        assert_allclose(trace(x).data, UTPM.trace(x).data)
 
 
 
@@ -169,7 +169,7 @@ class Test_global_functions(TestCase):
         cg.independentFunctionList = [ax]
         cg.dependentFunctionList = [ay]
 
-        assert_array_almost_equal(A, cg.gradient(x))
+        assert_allclose(A, cg.gradient(x))
 
 
 

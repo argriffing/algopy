@@ -72,10 +72,10 @@ class TestExactInterpolation(TestCase):
         i3 = numpy.array([1],dtype=int)
         i4 = numpy.array([1.5],dtype=float)
         
-        assert_array_almost_equal([1], multi_index_binomial(i1,i2))
-        assert_array_almost_equal([1], multi_index_binomial(i3,i1))
-        assert_array_almost_equal([1], multi_index_binomial(i4,i1))
-        assert_array_almost_equal([1.5], multi_index_binomial(i4,i3))
+        assert_allclose([1], multi_index_binomial(i1,i2))
+        assert_allclose([1], multi_index_binomial(i3,i1))
+        assert_allclose([1], multi_index_binomial(i4,i1))
+        assert_allclose([1.5], multi_index_binomial(i4,i3))
         
 
     def test_increment(self):
@@ -89,7 +89,7 @@ class TestExactInterpolation(TestCase):
             if numpy.allclose(i,k):
                 break
         
-        assert_array_almost_equal(numpy.prod(i+1),count)
+        assert_allclose(numpy.prod(i+1),count)
 
 
     def test_generate_permutations(self):
@@ -116,10 +116,10 @@ class TestExactInterpolation(TestCase):
             y = f(x)
             coeff_list.append(numpy.dot(Gamma, y.data[deg]))
             
-        assert_array_almost_equal([0], coeff_list[0])
-        assert_array_almost_equal([1,1], coeff_list[1])
-        assert_array_almost_equal([0,3,7], coeff_list[2])
-        assert_array_almost_equal([17,0,0,0], coeff_list[3])        
+        assert_allclose([0], coeff_list[0])
+        assert_allclose([1,1], coeff_list[1])
+        assert_allclose([0,3,7], coeff_list[2])
+        assert_allclose([17,0,0,0], coeff_list[3])        
         
         
 class TestForwardDrivers(TestCase):
@@ -129,7 +129,7 @@ class TestForwardDrivers(TestCase):
         A = numpy.dot(A.T,A)
         x = algopy.UTPM.init_hessian(numpy.arange(N,dtype=float))
         H = algopy.UTPM.extract_hessian(N, algopy.dot(x, algopy.dot(A,x)))
-        assert_array_almost_equal(A, 0.5*H)
+        assert_allclose(A, 0.5*H)
         
 
     def test_tensor_for_hessian_computation(self):
@@ -139,7 +139,7 @@ class TestForwardDrivers(TestCase):
         x = algopy.UTPM.init_tensor(2, numpy.arange(N))
         y = 0.5*algopy.dot(x, algopy.dot(A,x))
         H = algopy.UTPM.extract_tensor(N, algopy.dot(x, algopy.dot(A,x)))
-        assert_array_almost_equal(A, 0.5*H)
+        assert_allclose(A, 0.5*H)
 
 
 
@@ -151,7 +151,7 @@ class TestForwardDrivers(TestCase):
     # def test_generate_Gamma(self):
         # i = numpy.array([1,1],dtype=int)
         # (Gamma,J) = generate_Gamma(i)
-        # assert_array_almost_equal(Gamma, [ - 0.25, 1., -0.25])
+        # assert_allclose(Gamma, [ - 0.25, 1., -0.25])
 
     # def test_tensor(self):
     #     def f(x):

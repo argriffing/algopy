@@ -68,8 +68,8 @@ import numpy
 #         # print ybar_symbolic
 #         # print ybar_reverse
         
-#         assert_array_almost_equal(xbar_reverse.tc, xbar_symbolic.tc)
-#         assert_array_almost_equal(ybar_reverse.tc, ybar_symbolic.tc)
+#         assert_allclose(xbar_reverse.tc, xbar_symbolic.tc)
+#         assert_allclose(ybar_reverse.tc, ybar_symbolic.tc)
 
 
 # class TestCGraphOnUTPM(TestCase):
@@ -127,8 +127,8 @@ import numpy
 #         # # print ybar_symbolic
 #         # # print ybar_reverse
         
-#         assert_array_almost_equal(xbar_reverse.data, xbar_symbolic.data)
-#         assert_array_almost_equal(ybar_reverse.data, ybar_symbolic.data)
+#         assert_allclose(xbar_reverse.data, xbar_symbolic.data)
+#         assert_allclose(ybar_reverse.data, ybar_symbolic.data)
 
 
 

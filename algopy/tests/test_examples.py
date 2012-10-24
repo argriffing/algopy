@@ -149,14 +149,14 @@ class Test_MaximimLikelihoodExample(TestCase):
 
         Y = numpy.zeros(5)
 
-        assert_array_almost_equal(self.eval_f_eigh(Y), self.eval_f(Y))
-        assert_array_almost_equal(self.eval_grad_f_eigh(Y), self.eval_grad_f(Y))
+        assert_allclose(self.eval_f_eigh(Y), self.eval_f(Y))
+        assert_allclose(self.eval_grad_f_eigh(Y), self.eval_grad_f(Y))
 
     def test_ml_with_expm_hessian_forward(self):
 
         Y = numpy.zeros(5)
-        assert_array_almost_equal(self.eval_f_eigh(Y), self.eval_f(Y))
-        assert_array_almost_equal(self.eval_hess_f_eigh(Y), self.eval_hess_f(Y))
+        assert_allclose(self.eval_f_eigh(Y), self.eval_f(Y))
+        assert_allclose(self.eval_hess_f_eigh(Y), self.eval_hess_f(Y))
 
 
 
@@ -173,7 +173,7 @@ class Test_MaximimLikelihoodExample(TestCase):
         g1 = self.eval_grad_f(Y)
         g2 = cg.gradient(Y)
 
-        assert_array_almost_equal(g1, g2)
+        assert_allclose(g1, g2)
 
 
 class Test_OdoeExample(TestCase):
@@ -229,7 +229,7 @@ class Test_OdoeExample(TestCase):
         # print const1
 
         Cbar = UTPM.pb_trace(PHIbar, FC.x, FPHI.x)
-        assert_array_almost_equal(Cbar.data, FC.xbar.data)
+        assert_allclose(Cbar.data, FC.xbar.data)
         const2 =  UTPM.trace(UTPM.dot(Cbar.T, UTPM.shift(FC.x,-1)))
         # print const2
 
@@ -240,8 +240,8 @@ class Test_OdoeExample(TestCase):
 
         # print const3
 
-        assert_array_almost_equal(const1.data[0,:], const2.data[0,:])
-        assert_array_almost_equal(const2.data[0,:], const3.data[0,:])
+        assert_allclose(const1.data[0,:], const2.data[0,:])
+        assert_allclose(const2.data[0,:], const3.data[0,:])
 
 
 class Test_RemovableSingularities(TestCase):
@@ -255,42 +255,42 @@ class Test_RemovableSingularities(TestCase):
     def test_example_x(self):
         xdata = numpy.array([0., 1., 0., 0.]).reshape(4, 1)
         x = UTPM(xdata)
-        assert_array_almost_equal(x.data, xdata)
+        assert_allclose(x.data, xdata)
 
     def test_example_y(self):
         xdata = numpy.array([0., 1., 0., 0.]).reshape(4, 1)
         ydata = numpy.array([0., 1., 0., -1./6.]).reshape(4, 1)
         x = UTPM(xdata)
         y = sin(x)
-        assert_array_almost_equal(y.data, ydata)
+        assert_allclose(y.data, ydata)
 
     def test_example_z(self):
         xdata = numpy.array([0., 1., 0., 0.]).reshape(4, 1)
         zdata = numpy.array([1., 0., -1./6., 0.]).reshape(4, 1)
         x = UTPM(xdata)
         z = sin(x) // x
-        assert_array_almost_equal(z.data, zdata)
+        assert_allclose(z.data, zdata)
 
     def test_example_z_stable(self):
         xdata = numpy.array([0., 1., 0., 0.]).reshape(4, 1)
         zdata = numpy.array([1., 0., -1./6., 0]).reshape(4, 1)
         x = UTPM(xdata)
         z = hyp0f1(1.5, -(0.5 * x)**2)
-        assert_array_almost_equal(z.data, zdata)
+        assert_allclose(z.data, zdata)
 
     def test_example_w(self):
         xdata = numpy.array([0., 1., 0., 0.]).reshape(4, 1)
         wdata = numpy.array([1., 0.5, 1./6., 0.]).reshape(4, 1)
         x = UTPM(xdata)
         w = (exp(x) - 1.) // x
-        assert_array_almost_equal(w.data, wdata)
+        assert_allclose(w.data, wdata)
 
     def test_example_w_stable(self):
         xdata = numpy.array([0., 1., 0., 0.]).reshape(4, 1)
         wdata = numpy.array([1., 0.5, 1./6., 1./24.]).reshape(4, 1)
         x = UTPM(xdata)
         w = hyp1f1(1., 2., x)
-        assert_array_almost_equal(w.data, wdata)
+        assert_allclose(w.data, wdata)
 
 
 class Test_BroadcastingStrangeness(TestCase):
@@ -306,7 +306,7 @@ class Test_BroadcastingStrangeness(TestCase):
         v = x * w
         M_broadcast = Q * v
         M_dot_diag = dot(Q, diag(v))
-        assert_array_almost_equal(M_broadcast, M_dot_diag)
+        assert_allclose(M_broadcast, M_dot_diag)
 
         # But not when I start using AlgoPy with nonzero Taylor degree.
         # Maybe I am doing it wrong.
@@ -314,7 +314,7 @@ class Test_BroadcastingStrangeness(TestCase):
         v = x * w
         M_broadcast = Q * v
         M_dot_diag = dot(Q, diag(v))
-        assert_array_almost_equal(M_broadcast.data, M_dot_diag.data)
+        assert_allclose(M_broadcast.data, M_dot_diag.data)
 
 
 if __name__ == "__main__":

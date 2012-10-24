@@ -50,7 +50,7 @@ class Test_Function_on_numpy_types(TestCase):
     def test_init(self):
         x = 1.
         fx = Function(x)
-        assert_array_almost_equal(fx.x,x)
+        assert_allclose(fx.x,x)
 
     def test_pushforward_add(self):
         x,y = 1.,2.
@@ -66,7 +66,7 @@ class Test_Function_on_numpy_types(TestCase):
         fx = Function(x)
         fy = Function.pushforward(numpy.linalg.qr, [fx])
         y  = numpy.linalg.qr(x)
-        assert_array_almost_equal(fy.x, y)
+        assert_allclose(fy.x, y)
 
 class Test_Function_on_UTPM(TestCase):
 
@@ -114,7 +114,7 @@ class Test_Function_on_UTPM(TestCase):
         ybar = UTPM(numpy.random.rand(D,P,N))
         cg.pullback([ybar])
 
-        assert_array_almost_equal( x.xbar.data, (2 * ybar * x.x).data)
+        assert_allclose( x.xbar.data, (2 * ybar * x.x).data)
 
     def test_sum(self):
         D,P,N = 2,1,4
@@ -138,7 +138,7 @@ class Test_Function_on_UTPM(TestCase):
         cg1.pullback([ybar])
         cg2.pullback([ybar])
 
-        assert_array_almost_equal(x1.xbar.data, x2.xbar.data)
+        assert_allclose(x1.xbar.data, x2.xbar.data)
 
 
 
@@ -173,10 +173,10 @@ class Test_Function_on_UTPM(TestCase):
         J1 = UTPM.extract_jacobian(eval_f1(UTPM.init_jacobian(x)))
         J2 = UTPM.extract_jacobian(eval_f2(UTPM.init_jacobian(x)))
 
-        assert_array_almost_equal(g1,g2)
-        assert_array_almost_equal(g2,J1)
-        assert_array_almost_equal(J1,J2)
-        assert_array_almost_equal(J2,g1)
+        assert_allclose(g1,g2)
+        assert_allclose(g2,J1)
+        assert_allclose(J1,J2)
+        assert_allclose(J2,g1)
 
 
 
@@ -194,8 +194,8 @@ class Test_Function_on_UTPM(TestCase):
         f = cg.function([tmp])[0]
         g = cg.gradient([tmp])[0]
 
-        assert_array_almost_equal(f, numpy.prod(tmp))
-        assert_array_almost_equal(g, [tmp[1]*tmp[2], tmp[0]*tmp[2], tmp[0]*tmp[1]])
+        assert_allclose(f, numpy.prod(tmp))
+        assert_allclose(g, [tmp[1]*tmp[2], tmp[0]*tmp[2], tmp[0]*tmp[1]])
 
     def test_getitem(self):
         D,P,N = 2,5,7
@@ -204,7 +204,7 @@ class Test_Function_on_UTPM(TestCase):
 
         for r in range(N):
             for c in range(N):
-                assert_array_almost_equal( fx[r,c].x.data, ax.data[:,:,r,c])
+                assert_allclose( fx[r,c].x.data, ax.data[:,:,r,c])
 
     def test_setitem(self):
         D,P,N = 2,5,7
@@ -215,7 +215,7 @@ class Test_Function_on_UTPM(TestCase):
         for n in range(N):
             fx[n] = 2 * ay[n]
 
-        assert_array_almost_equal( fx.x.data, 2*ay.data)
+        assert_allclose( fx.x.data, 2*ay.data)
 
     def test_neg(self):
         cg = CGraph()
@@ -229,7 +229,7 @@ class Test_Function_on_UTPM(TestCase):
         ybar[0] = 1.
         cg.pullback([ybar])
 
-        assert_array_almost_equal(x.xbar.data, - y.xbar.data)
+        assert_allclose(x.xbar.data, - y.xbar.data)
 
 class Test_Mixed_Function_Operations(TestCase):
     def test_scalar(self):
@@ -248,10 +248,10 @@ class Test_Mixed_Function_Operations(TestCase):
         fz23 = y * fx
         fz24 = 1./(y/fx)
 
-        assert_array_almost_equal(fz11.x, fz21.x)
-        assert_array_almost_equal(fz12.x, fz22.x)
-        assert_array_almost_equal(fz13.x, fz23.x)
-        assert_array_almost_equal(fz14.x, fz24.x)
+        assert_allclose(fz11.x, fz21.x)
+        assert_allclose(fz12.x, fz22.x)
+        assert_allclose(fz13.x, fz23.x)
+        assert_allclose(fz14.x, fz24.x)
 
 
     def test_function_setitem_with_scalar(self):
@@ -261,8 +261,8 @@ class Test_Mixed_Function_Operations(TestCase):
         fx = Function(x)
         fx[...] = y
 
-        assert_array_almost_equal(fx.x.data[0,...], y)
-        assert_array_almost_equal(fx.x.data[1:,...], 0)
+        assert_allclose(fx.x.data[0,...], y)
+        assert_allclose(fx.x.data[1:,...], 0)
 
 class Test_CGgraph_on_numpy_operations(TestCase):
     def test_pushforward(self):
@@ -279,7 +279,7 @@ class Test_CGgraph_on_numpy_operations(TestCase):
         x = 32.23
         y = 235.
         cg.pushforward([x,y])
-        assert_array_almost_equal( cg.dependentFunctionList[0].x,  (x + y) * y)
+        assert_allclose( cg.dependentFunctionList[0].x,  (x + y) * y)
 
 
     def test_set_item(self):
@@ -288,7 +288,7 @@ class Test_CGgraph_on_numpy_operations(TestCase):
         fy = Function(numpy.array([4.,5.,6.]))
 
         fx[0] += 1
-        assert_array_almost_equal( fx.x, [2,2,3])
+        assert_allclose( fx.x, [2,2,3])
 
     def test_forward(self):
         cg = CGraph()
@@ -327,7 +327,7 @@ class Test_CGgraph_on_UTPM(TestCase):
         cg.independentFunctionList = [fX,fY]
         cg.dependentFunctionList = [fV2]
         cg.pushforward([aX,aY])
-        assert_array_almost_equal(cg.dependentFunctionList[0].x.data, ((aX*aY * aX + aY)*aX*aY).data)
+        assert_allclose(cg.dependentFunctionList[0].x.data, ((aX*aY * aX + aY)*aX*aY).data)
 
 
     def test_pullback_reshape(self):
@@ -340,7 +340,7 @@ class Test_CGgraph_on_UTPM(TestCase):
         ybar = UTPM(numpy.random.random((2,4,6)))
         cg.pullback([ybar])
 
-        assert_array_almost_equal(fx.xbar.data, ybar.data.reshape((2,4,3,2)))
+        assert_allclose(fx.xbar.data, ybar.data.reshape((2,4,3,2)))
 
     def test_pullback_diag(self):
         D,P,N = 2,3,4
@@ -358,7 +358,7 @@ class Test_CGgraph_on_UTPM(TestCase):
         Ybar = Xbar.copy()
 
         cg.pullback([Xbar, Ybar])
-        assert_array_almost_equal(x.xbar.data, 2* UTPM.diag(Xbar).data)
+        assert_allclose(x.xbar.data, 2* UTPM.diag(Xbar).data)
 
     def test_pushforward_of_qr(self):
         cg = CGraph()
@@ -377,7 +377,7 @@ class Test_CGgraph_on_UTPM(TestCase):
         Q = cg.dependentFunctionList[0].x
         R = cg.dependentFunctionList[1].x
 
-        assert_array_almost_equal(x.data,UTPM.dot(Q,R).data)
+        assert_allclose(x.data,UTPM.dot(Q,R).data)
 
     def test_pullback_symvec_vecsym(self):
         (D,P,N) = 2,1,6
@@ -393,7 +393,7 @@ class Test_CGgraph_on_UTPM(TestCase):
         wbar = UTPM(numpy.random.rand(*(D,P,N)))
         cg.pullback([wbar])
 
-        assert_array_almost_equal( wbar.data, v.xbar.data)
+        assert_allclose( wbar.data, v.xbar.data)
 
 
 
@@ -421,8 +421,8 @@ class Test_CGgraph_on_UTPM(TestCase):
         dzdx = 2.*x*y
         dzdy = x*x
 
-        assert_array_almost_equal(dzdx.data, cg.independentFunctionList[0].xbar.data)
-        assert_array_almost_equal(dzdy.data, cg.independentFunctionList[1].xbar.data)
+        assert_allclose(dzdx.data, cg.independentFunctionList[0].xbar.data)
+        assert_allclose(dzdy.data, cg.independentFunctionList[1].xbar.data)
 
     def test_pullback2(self):
         """
@@ -451,8 +451,8 @@ class Test_CGgraph_on_UTPM(TestCase):
         dzdx = 3 * x*x * y*y + y*y
         dzdy = 2 * x*x*x * y  + 2 * x * y
 
-        assert_array_almost_equal(dzdx.data, cg.independentFunctionList[0].xbar.data)
-        assert_array_almost_equal(dzdy.data, cg.independentFunctionList[1].xbar.data)
+        assert_allclose(dzdx.data, cg.independentFunctionList[0].xbar.data)
+        assert_allclose(dzdy.data, cg.independentFunctionList[1].xbar.data)
 
 
     def test_pullback3(self):
@@ -602,7 +602,7 @@ class Test_CGgraph_on_UTPM(TestCase):
         Abar = fA.xbar
         xbar = fx.xbar
 
-        assert_array_almost_equal(x.data, UTPM.dot(A,y).data)
+        assert_allclose(x.data, UTPM.dot(A,y).data)
 
         for p in range(P):
             Ab = Abar.data[0,p]
@@ -658,7 +658,7 @@ class Test_CGgraph_on_UTPM(TestCase):
         Abar1 = cg1.independentFunctionList[0].xbar
         Abar2 = cg2.independentFunctionList[0].xbar
 
-        assert_array_almost_equal(Abar1.data, Abar2.data)
+        assert_allclose(Abar1.data, Abar2.data)
 
 
 
@@ -745,8 +745,8 @@ class Test_CGgraph_on_UTPM(TestCase):
         # print ybar_symbolic
         # print ybar_reverse
 
-        assert_array_almost_equal(xbar_reverse.data, xbar_symbolic.data)
-        assert_array_almost_equal(ybar_reverse.data, ybar_symbolic.data)
+        assert_allclose(xbar_reverse.data, xbar_symbolic.data)
+        assert_allclose(ybar_reverse.data, ybar_symbolic.data)
 
     def test_dot(self):
         """ test   z = dot(x,y)"""
@@ -772,8 +772,8 @@ class Test_CGgraph_on_UTPM(TestCase):
         xbar_symbolic = UTPM.dot(azbar,ay.T)
         ybar_symbolic = UTPM.dot(ax.T,azbar)
 
-        assert_array_almost_equal(xbar_reverse.data, xbar_symbolic.data)
-        assert_array_almost_equal(ybar_reverse.data, ybar_symbolic.data)
+        assert_allclose(xbar_reverse.data, xbar_symbolic.data)
+        assert_allclose(ybar_reverse.data, ybar_symbolic.data)
 
     def test_outer(self):
         x = numpy.arange(4)
@@ -797,7 +797,7 @@ class Test_CGgraph_on_UTPM(TestCase):
         cg2.dependentFunctionList = [z]
 
 
-        assert_array_almost_equal(cg.jacobian(numpy.arange(4)), cg2.jacobian(numpy.arange(4)))
+        assert_allclose(cg.jacobian(numpy.arange(4)), cg2.jacobian(numpy.arange(4)))
 
 
     def test_transpose(self):
@@ -863,13 +863,13 @@ class Test_CGgraph_on_UTPM(TestCase):
         cg.independentFunctionList = [Fx]
         cg.dependentFunctionList = [Fz]
 
-        assert_array_almost_equal(Fz.x.data[0], x.data[0]**2)
+        assert_allclose(Fz.x.data[0], x.data[0]**2)
 
         zbar = UTPM(numpy.zeros((D,P)))
         zbar.data[0,:] = 1.
         cg.pullback([zbar])
 
-        assert_array_almost_equal(Fx.x.data * 2, Fx.xbar.data)
+        assert_allclose(Fx.x.data * 2, Fx.xbar.data)
 
 
     def test_simple_getitem2(self):
@@ -895,8 +895,8 @@ class Test_CGgraph_on_UTPM(TestCase):
         zbar.data[0,:] = 1.
         cg.pullback([zbar])
 
-        assert_array_almost_equal(Fx1.xbar.data , Fx2.x.data)
-        assert_array_almost_equal(Fx2.xbar.data , Fx1.x.data)
+        assert_allclose(Fx1.xbar.data , Fx2.x.data)
+        assert_allclose(Fx2.xbar.data , Fx1.x.data)
 
     def test_simple_getitem_setitem(self):
         """
@@ -917,13 +917,13 @@ class Test_CGgraph_on_UTPM(TestCase):
         cg.independentFunctionList = [Fx]
         cg.dependentFunctionList = [Fz]
 
-        assert_array_almost_equal(Fz.x.data[0], 3*x.data[0]**2)
+        assert_allclose(Fz.x.data[0], 3*x.data[0]**2)
 
         zbar = UTPM(numpy.zeros((D,P)))
         zbar.data[0,:] = 1.
         cg.pullback([zbar])
 
-        assert_array_almost_equal(Fx.x.data * 6, Fx.xbar.data)
+        assert_allclose(Fx.x.data * 6, Fx.xbar.data)
 
 
     def test_reverse_on_getitem_setitem(self):
@@ -941,7 +941,7 @@ class Test_CGgraph_on_UTPM(TestCase):
         cg.independentFunctionList = [fx]
         cg.dependentFunctionList = [fy]
 
-        assert_array_almost_equal(fx.x.data, fy.x.data)
+        assert_allclose(fx.x.data, fy.x.data)
 
         ybar = UTPM(numpy.zeros((D,P,N,M)))
         ybar.data[0,:,:,:] = 1.
@@ -970,7 +970,7 @@ class Test_CGgraph_on_UTPM(TestCase):
 
         xbar_correct = 2*ay * zbar
 
-        assert_array_almost_equal(xbar_correct.data, fx.xbar.data)
+        assert_allclose(xbar_correct.data, fx.xbar.data)
 
 
     def test_broadcasting1(self):
@@ -991,7 +991,7 @@ class Test_CGgraph_on_UTPM(TestCase):
         print zbar.data[0,0]
         print A.xbar.data[0,0]
         print x.xbar.data[0,0]
-        assert_array_almost_equal(numpy.sum(z.x.data[1,0] * zbar.data[0,0]), numpy.sum(x.x.data[1,0] * x.xbar.data[0,0]) + numpy.sum(A.x.data[1,0] * A.xbar.data[0,0]))
+        assert_allclose(numpy.sum(z.x.data[1,0] * zbar.data[0,0]), numpy.sum(x.x.data[1,0] * x.xbar.data[0,0]) + numpy.sum(A.x.data[1,0] * A.xbar.data[0,0]))
 
 
     def test_broadcasting2(self):
@@ -1009,7 +1009,7 @@ class Test_CGgraph_on_UTPM(TestCase):
 
         zbar = UTPM(numpy.random.rand(*z.x.data.shape))
         cg.pullback([zbar])
-        assert_array_almost_equal(numpy.sum(z.x.data[1,0] * zbar.data[0,0]), numpy.sum(x.x.data[1,0] * x.xbar.data[0,0]) + numpy.sum(A.x.data[1,0] * A.xbar.data[0,0]))
+        assert_allclose(numpy.sum(z.x.data[1,0] * zbar.data[0,0]), numpy.sum(x.x.data[1,0] * x.xbar.data[0,0]) + numpy.sum(A.x.data[1,0] * A.xbar.data[0,0]))
 
     def test_broadcasting3(self):
         D,P = 2,1
@@ -1029,7 +1029,7 @@ class Test_CGgraph_on_UTPM(TestCase):
         print zbar.data[0,0]
         print y.xbar.data[0,0]
         print x.xbar.data[0,0]
-        assert_array_almost_equal(numpy.sum(z.x.data[1,0] * zbar.data[0,0]), numpy.sum(x.x.data[1,0] * x.xbar.data[0,0]) + numpy.sum(y.x.data[1,0] * y.xbar.data[0,0]))
+        assert_allclose(numpy.sum(z.x.data[1,0] * zbar.data[0,0]), numpy.sum(x.x.data[1,0] * x.xbar.data[0,0]) + numpy.sum(y.x.data[1,0] * y.xbar.data[0,0]))
 
     def test_eigh1_pullback(self):
         (D,P,N) = 2,1,2
@@ -1053,13 +1053,13 @@ class Test_CGgraph_on_UTPM(TestCase):
         # print cg
         cg.pullback([Lbar])
         L = FL.x; Q = FQ.x; b = Fb.x
-        assert_array_almost_equal(dot(Q, dot(L,Q.T)).data, A.data, decimal = 13)
+        assert_allclose(dot(Q, dot(L,Q.T)).data, A.data, decimal = 13)
 
         Qbar = UTPM(numpy.zeros((D,P,N,N)))
 
         Abar = UTPM.pb_eigh1( Lbar, Qbar, None, A, L, Q, b)
 
-        assert_array_almost_equal(Abar.data, FA.xbar.data)
+        assert_allclose(Abar.data, FA.xbar.data)
 
         Abar = Abar.data[0,0]
         Adot = A.data[1,0]
@@ -1116,16 +1116,16 @@ class Test_CGgraph_on_UTPM(TestCase):
         az = zfcn(ax2)
         cg.pushforward([ ax2 ])
 
-        assert_array_almost_equal(az.data, fy[5].x.data)
+        assert_allclose(az.data, fy[5].x.data)
 
         # check correctness of the pullback
         zbar = UTPM(numpy.ones((1,1)))
         cg.pullback([zbar])
 
         ax2bar = dzfcn(ax2)
-        assert_array_almost_equal(ax2bar[0].data, fx.xbar.data[:,:,0])
-        assert_array_almost_equal(ax2bar[1].data, fx.xbar.data[:,:,1])
-        assert_array_almost_equal(ax2bar[2].data, fx.xbar.data[:,:,2])
+        assert_allclose(ax2bar[0].data, fx.xbar.data[:,:,0])
+        assert_allclose(ax2bar[1].data, fx.xbar.data[:,:,1])
+        assert_allclose(ax2bar[2].data, fx.xbar.data[:,:,2])
 
         # cg.plot(os.path.join(Settings.output_dir,'test_buffered_operations.svg'))
 
@@ -1161,7 +1161,7 @@ class Test_CGgraph_on_UTPM(TestCase):
         # print const1
         # print const2
 
-        assert_array_almost_equal(const1.data[0,:], const2.data[0,:])
+        assert_allclose(const1.data[0,:], const2.data[0,:])
 
 
     def test_very_simple_ODOE_objective_function(self):
@@ -1195,7 +1195,7 @@ class Test_CGgraph_on_UTPM(TestCase):
         # print const1
         # print const2
 
-        assert_array_almost_equal(const1.data[0,:], const2.data[0,:])
+        assert_allclose(const1.data[0,:], const2.data[0,:])
 
 
     def test_hyp1f1(self):
@@ -1226,9 +1226,9 @@ class Test_CGgraph_on_UTPM(TestCase):
         y = f(x)
         result3 = UTPM.extract_jacobian(y)[0]
 
-        assert_array_almost_equal(result1, result2)
-        assert_array_almost_equal(result2, result3)
-        assert_array_almost_equal(result3, result1)
+        assert_allclose(result1, result2)
+        assert_allclose(result2, result3)
+        assert_allclose(result3, result1)
 
 
     def test_hyp2f0(self):
@@ -1260,9 +1260,9 @@ class Test_CGgraph_on_UTPM(TestCase):
         y = f(x)
         result3 = UTPM.extract_jacobian(y)[0]
 
-        assert_array_almost_equal(result1, result2)
-        assert_array_almost_equal(result2, result3)
-        assert_array_almost_equal(result3, result1)
+        assert_allclose(result1, result2)
+        assert_allclose(result2, result3)
+        assert_allclose(result3, result1)
 
 
     def test_hyp0f1(self):
@@ -1294,9 +1294,9 @@ class Test_CGgraph_on_UTPM(TestCase):
         y = f(x)
         result3 = UTPM.extract_jacobian(y)[0]
 
-        assert_array_almost_equal(result1, result2)
-        assert_array_almost_equal(result2, result3)
-        assert_array_almost_equal(result3, result1)
+        assert_allclose(result1, result2)
+        assert_allclose(result2, result3)
+        assert_allclose(result3, result1)
 
 
     def test_erf(self):
@@ -1327,9 +1327,9 @@ class Test_CGgraph_on_UTPM(TestCase):
         y = f(x)
         result3 = UTPM.extract_jacobian(y)[0]
 
-        assert_array_almost_equal(result1, result2)
-        assert_array_almost_equal(result2, result3)
-        assert_array_almost_equal(result3, result1)
+        assert_allclose(result1, result2)
+        assert_allclose(result2, result3)
+        assert_allclose(result3, result1)
 
     def test_erfi(self):
         """
@@ -1359,9 +1359,9 @@ class Test_CGgraph_on_UTPM(TestCase):
         y = f(x)
         result3 = UTPM.extract_jacobian(y)[0]
 
-        assert_array_almost_equal(result1, result2)
-        assert_array_almost_equal(result2, result3)
-        assert_array_almost_equal(result3, result1)
+        assert_allclose(result1, result2)
+        assert_allclose(result2, result3)
+        assert_allclose(result3, result1)
 
     def test_dawsn(self):
         """
@@ -1391,9 +1391,9 @@ class Test_CGgraph_on_UTPM(TestCase):
         y = f(x)
         result3 = UTPM.extract_jacobian(y)[0]
 
-        assert_array_almost_equal(result1, result2)
-        assert_array_almost_equal(result2, result3)
-        assert_array_almost_equal(result3, result1)
+        assert_allclose(result1, result2)
+        assert_allclose(result2, result3)
+        assert_allclose(result3, result1)
 
     def test_logit(self):
         """
@@ -1423,9 +1423,9 @@ class Test_CGgraph_on_UTPM(TestCase):
         y = f(x)
         result3 = UTPM.extract_jacobian(y)[0]
 
-        assert_array_almost_equal(result1, result2)
-        assert_array_almost_equal(result2, result3)
-        assert_array_almost_equal(result3, result1)
+        assert_allclose(result1, result2)
+        assert_allclose(result2, result3)
+        assert_allclose(result3, result1)
 
     def test_expit(self):
         """
@@ -1455,9 +1455,9 @@ class Test_CGgraph_on_UTPM(TestCase):
         y = f(x)
         result3 = UTPM.extract_jacobian(y)[0]
 
-        assert_array_almost_equal(result1, result2)
-        assert_array_almost_equal(result2, result3)
-        assert_array_almost_equal(result3, result1)
+        assert_allclose(result1, result2)
+        assert_allclose(result2, result3)
+        assert_allclose(result3, result1)
 
 
 
@@ -1488,14 +1488,14 @@ class Test_CGgraph_on_UTPM(TestCase):
 
         # # compute pullback by hand
         # Cbar = UTPM.pb_trace(PHIbar, FC.x, FPHI.x)
-        # assert_array_almost_equal(Cbar.data, FC.xbar.data)
+        # assert_allclose(Cbar.data, FC.xbar.data)
 
         # Mbar = UTPM.pb_inv(Cbar, FM.x, FC.x)
-        # assert_array_almost_equal(Mbar.data, FM.xbar.data)
+        # assert_allclose(Mbar.data, FM.xbar.data)
 
         # for FJ in FJs:
         #     tmpbar = UTPM.pb_dot(Mbar, FJ.T.x, FJ.x, FM.x)
-        #     assert_array_almost_equal(tmpbar[1].data , FJ.xbar.data)
+        #     assert_allclose(tmpbar[1].data , FJ.xbar.data)
 
 
         # verifying pullback by  ybar.T ydot == xbar.T xdot
@@ -1505,7 +1505,7 @@ class Test_CGgraph_on_UTPM(TestCase):
         for nFJ, FJ in enumerate(FJs):
             const2 += UTPM.trace(UTPM.dot(FJ.xbar.T, UTPM.shift(FJ.x,-1)))
 
-        assert_array_almost_equal(const1.data[0,:], const2.data[0,:])
+        assert_allclose(const1.data[0,:], const2.data[0,:])
 
 
     def test_simple_repeated_buffered_operation(self):
@@ -1527,9 +1527,9 @@ class Test_CGgraph_on_UTPM(TestCase):
         cg.independentFunctionList = [Fx]
         cg.dependentFunctionList = [Fy]
 
-        assert_array_almost_equal(Fy.x.data[0], x.data[0])
+        assert_allclose(Fy.x.data[0], x.data[0])
         cg.pushforward([x])
-        assert_array_almost_equal(Fy.x.data[0], x.data[0])
+        assert_allclose(Fy.x.data[0], x.data[0])
 
 
     def test_pullback_gradient(self):
@@ -1572,10 +1572,10 @@ class Test_CGgraph_on_UTPM(TestCase):
                 p = m*N + n
 
                 #check gradient
-                assert_array_almost_equal(y.x.data[1,p], A.xbar.data[0,p,m,n])
+                assert_allclose(y.x.data[1,p], A.xbar.data[0,p,m,n])
 
                 #check hessian
-                assert_array_almost_equal(0, A.xbar.data[1,p,m,n])
+                assert_allclose(0, A.xbar.data[1,p,m,n])
 
     def test_pullback_gradient2(self):
         (D,P,M,N) = 3,9,3,3
@@ -1603,7 +1603,7 @@ class Test_CGgraph_on_UTPM(TestCase):
         g1  =  y.x.data[1]
         g2 = A.xbar.data[0,0].ravel()
 
-        assert_array_almost_equal(g1, g2)
+        assert_allclose(g1, g2)
 
         tmp = []
         for m in range(M):
@@ -1613,7 +1613,7 @@ class Test_CGgraph_on_UTPM(TestCase):
 
         h1 = y.x.data[2]
         h2 = numpy.array(tmp)
-        assert_array_almost_equal(2*h1, h2)
+        assert_allclose(2*h1, h2)
 
 
     def test_gradient(self):
@@ -1631,7 +1631,7 @@ class Test_CGgraph_on_UTPM(TestCase):
         cg.dependentFunctionList = [Fz]
 
         x = numpy.array([11,13.])
-        assert_array_almost_equal([4*x[1]**2 * x[0], 4*x[0]**2 * x[1]], cg.gradient([x])[0])
+        assert_allclose([4*x[1]**2 * x[0], 4*x[0]**2 * x[1]], cg.gradient([x])[0])
 
     def test_tangent_gradient(self):
         cg = CGraph()
@@ -1644,8 +1644,8 @@ class Test_CGgraph_on_UTPM(TestCase):
 
         x = UTPM.init_jacobian(1.)
 
-        assert_array_almost_equal(g1,UTPM.extract_jacobian(algopy.sin(x)/algopy.cos(x)))
-        assert_array_almost_equal(g1,UTPM.extract_jacobian(algopy.tan(x)))
+        assert_allclose(g1,UTPM.extract_jacobian(algopy.sin(x)/algopy.cos(x)))
+        assert_allclose(g1,UTPM.extract_jacobian(algopy.tan(x)))
 
 
 class Test_UserFriendlyDrivers(TestCase):
@@ -1690,37 +1690,37 @@ class Test_UserFriendlyDrivers(TestCase):
 
         # reverse mode gradient
         res4 = cg.gradient(x)
-        assert_array_almost_equal(numpy.array( [x[1]*x[2],
+        assert_allclose(numpy.array( [x[1]*x[2],
                                                 x[0]*x[2]+7,
                                                 x[0]*x[1]]), res4)
 
         # forward/reverse mode Hessian
         res5 = cg.hessian(x)
-        assert_array_almost_equal(numpy.array( [[0, x[2], x[1]],
+        assert_allclose(numpy.array( [[0, x[2], x[1]],
                                                 [x[2], 0., x[0]],
                                                 [x[1], x[0], 0]]), res5)
 
         # forward/reverse mode Hessian-vector
         res6 = cg.hess_vec(x,v)
-        assert_array_almost_equal(numpy.dot(res5, v), res6)
+        assert_allclose(numpy.dot(res5, v), res6)
 
         # reverese mode Jacobian
         res7 = cg2.jacobian(x)
-        assert_array_almost_equal(numpy.array( [[4*x[0], 0, 0],
+        assert_allclose(numpy.array( [[4*x[0], 0, 0],
                                                 [7*x[1], 7*x[0], 0],
                                                 [23., 0, 1]]), res7)
 
         # reverse mode vector-Jacobian
         res8 = cg2.vec_jac(w,x)
-        assert_array_almost_equal(numpy.dot(w,res7), res8)
+        assert_allclose(numpy.dot(w,res7), res8)
 
         # forward mode Jacobian-vector
         res9 = cg2.jac_vec(x,v)
-        assert_array_almost_equal(numpy.dot(res7,v), res9)
+        assert_allclose(numpy.dot(res7,v), res9)
 
         # forward/reverse mode vector-Hessian-vector
         res10 = cg2.vec_hess_vec(w,x,v)
-        assert_array_almost_equal(numpy.array([4*v[0]*w[0]+ 7*v[1]*w[1],
+        assert_allclose(numpy.array([4*v[0]*w[0]+ 7*v[1]*w[1],
                                                7*w[1],
                                                0]), res10)
 
@@ -1765,8 +1765,8 @@ class Test_UserFriendlyDrivers(TestCase):
         m = Model()
         m.trace_eval_g(x)
 
-        assert_array_almost_equal(m.eval_jac_g_forward(x), m.eval_jac_g_reverse(x))
-        assert_array_almost_equal(m.eval_vec_hess_g_forward(w,x), m.eval_vec_hess_g_reverse(w,x))
+        assert_allclose(m.eval_jac_g_forward(x), m.eval_jac_g_reverse(x))
+        assert_allclose(m.eval_vec_hess_g_forward(w,x), m.eval_vec_hess_g_reverse(w,x))
 
 
 
